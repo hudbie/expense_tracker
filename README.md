@@ -1,81 +1,85 @@
-## Simple Expense Tracker Application
+## Simple Expense Tracker - Usage Guide
 
-A command-line expense tracking application with data visualization capabilities.
+### 📋 Overview
+A simple command-line expense tracking application with data visualization capabilities.
 
-### Features
-- ✅ Add expenses with amount, category, and description
-- ✅ List all expenses with filtering options
-- ✅ View expense summary by category
-- ✅ Delete expenses by ID
-- ✅ Generate visualizations (pie charts, bar charts, time series)
-- ✅ Persistent data storage (JSON)
+### 🚀 Installation
 
-### Installation & Setup
-
-1. **Install Python Dependencies:**
+1. **Install required dependencies:**
    ```bash
-   # Method 1: Run the installation script
-   python install_dependencies.py
-   
-   # Method 2: Install manually
-   pip install matplotlib pandas
+   pip install -r requirements.txt
    ```
 
-2. **Run the Application:**
-   ```bash
-   python expense_tracker.py
-   ```
+### 🎯 How to Use
 
-### How to Use
+#### Running the Main Application
+```bash
+python main.py
+```
 
-1. **Starting the Application:**
-   - Run `python expense_tracker.py`
-   - You'll see a menu with options 1-6
+#### Quick Statistics
+```bash
+python quick_stats.py
+```
 
-2. **Adding an Expense:**
-   - Choose option 1 from the menu
-   - Enter the amount (e.g., `25.50`)
-   - Enter a category (e.g., `Food`, `Transport`, `Entertainment`)
-   - Add an optional description
+### 📝 Features
 
-3. **Viewing Expenses:**
-   - Option 2: List all expenses (shows recent expenses first)
-   - Option 3: Show summary by category with totals
+1. **Add Expense** 
+   - Record amount, category, and optional description
+   - Automatically saves with timestamp
 
-4. **Data Visualization:**
-   - Option 5: Generate charts and graphs
-   - Requires matplotlib and pandas to be installed
+2. **View Expenses**
+   - See all expenses in a formatted table
+   - Option to view only recent expenses
 
-5. **Managing Expenses:**
-   - Option 4: Delete an expense by its ID number
+3. **Expense Summary**
+   - View total spending by category
+   - Sorted by highest spending
 
-### Data Storage
-- Expenses are stored in `expenses.json` file
+4. **Data Visualization**
+   - Pie chart showing expense distribution by category
+   - Bar chart showing monthly spending trends
+   - Charts saved as `expense_charts.png`
+
+5. **Delete Expenses**
+   - Remove expenses by ID
+   - Automatic ID reassignment
+
+### 💾 Data Storage
+- Expenses are stored in `expenses.json`
 - Data persists between sessions
-- File is automatically created when you add your first expense
+- Automatic backup on each modification
 
-### Example Usage Flow
-```
-1. Add Expense → Amount: 15.50 → Category: Food → Description: Lunch
-2. Add Expense → Amount: 45.00 → Category: Transport → Description: Gas
-3. Show Summary → See totals by category
-4. Generate Visualization → View charts and statistics
-```
+### 🎨 Sample Categories
+You can use any categories you like. Some suggestions:
+- Food & Dining
+- Transportation
+- Entertainment
+- Shopping
+- Bills & Utilities
+- Healthcare
+- Education
 
-### Requirements
+### 📊 Sample Usage Flow
+
+1. Run `python main.py`
+2. Choose option 1 to add your first expense:
+   - Amount: `25.50`
+   - Category: `Food`
+   - Description: `Lunch with friends`
+3. Add a few more expenses with different categories
+4. Use option 3 to see category summary
+5. Use option 4 to generate visual charts
+6. Use option 5 to manage expenses if needed
+
+### 🔧 Requirements
 - Python 3.6+
-- matplotlib (for visualizations)
-- pandas (for data analysis)
+- matplotlib
+- pandas
 
-### Troubleshooting
-- If visualizations don't work, run `python install_dependencies.py`
-- Make sure all files are in the same directory
-- On some systems, you might need to install tkinter for matplotlib:
-  ```bash
-  # Ubuntu/Debian
-  sudo apt-get install python3-tk
-  # macOS with Homebrew
-  brew install python-tk
-  ```
+### 💡 Tips
+- Use descriptive categories for better visualization
+- Regular backups of `expenses.json` are recommended
+- Charts are automatically saved and can be shared
 
-The application provides a simple yet powerful way to track and analyze your expenses with beautiful visualizations!
+The application provides a simple yet powerful way to track and visualize your spending habits directly from the command line!
