@@ -6,20 +6,20 @@ Simple Command-Line Expense Tracker with Data Visualization
 import json
 import os
 import datetime
-from typing import List, Dict, Any
 import matplotlib.pyplot as plt
-import pandas as pd
+from collections import defaultdict
+
+DATA_FILE = "expenses.json"
 
 class ExpenseTracker:
-    def __init__(self, data_file: str = "expenses.json"):
-        self.data_file = data_file
+    def __init__(self):
         self.expenses = self.load_expenses()
     
-    def load_expenses(self) -> List[Dict[str, Any]]:
+    def load_expenses(self):
         """Load expenses from JSON file"""
-        if os.path.exists(self.data_file):
+        if os.path.exists(DATA_FILE):
             try:
-                with open(self.data_file, 'r') as f:
+                with open(DATA_FILE, 'r') as f:
                     return json.load(f)
             except (json.JSONDecodeError, FileNotFoundError):
                 return []
@@ -27,104 +27,150 @@ class ExpenseTracker:
     
     def save_expenses(self):
         """Save expenses to JSON file"""
-        with open(self.data_file, 'w') as f:
+        with open(DATA_FILE, 'w') as f:
             json.dump(self.expenses, f, indent=2)
     
-    def add_expense(self, amount: float, category: str, description: str = ""):
+    def add_expense(self, amount, category, description=""):
         """Add a new expense"""
         expense = {
             'id': len(self.expenses) + 1,
-            'amount': amount,
+            'amount': float(amount),
             'category': category,
             'description': description,
             'date': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         self.expenses.append(expense)
         self.save_expenses()
-        print(f"✅ Expense added: ${amount:.2f} for {category}")
+        print(f"✅ Expense added: ${amount} - {category}")
     
-    def view_expenses(self, limit: int = None):
-        """View all expenses"""
+    def view_expenses(self, filter_category=None):
+        """View all expenses or filter by category"""
         if not self.expenses:
-            print("📭 No expenses recorded yet.")
+            print("📝 No expenses recorded yet.")
             return
         
-        expenses_to_show = self.expenses if limit is None else self.expenses[-limit:]
+        filtered_expenses = self.expenses
+        if filter_category:
+            filtered_expenses = [e for e in self.expenses if e['category'].lower() == filter_category.lower()]
         
-        print("\n📋 EXPENSE HISTORY:")
-        print("-" * 80)
-        print(f"{'ID':<4} {'Date':<19} {'Category':<15} {'Amount':<10} {'Description'}")
-        print("-" * 80)
+        if not filtered_expenses:
+            print(f"📝 No expenses found for category: {filter_category}")
+            return
         
+        print(f"\n{'ID':<4} {'Date':<20} {'Category':<15} {'Amount':<10} {'Description'}")
+        print("-" * 70)
         total = 0
-        for expense in expenses_to_show:
-            print(f"{expense['id']:<4} {expense['date']:<19} {expense['category']:<15} "
-                  f"${expense['amount']:<9.2f} {expense['description']}")
+        for expense in filtered_expenses:
+            print(f"{expense['id']:<4} {expense['date']:<20} {expense['category']:<15} ${expense['amount']:<9.2f} {expense['description']}")
             total += expense['amount']
         
-        print("-" * 80)
+        print("-" * 70)
         print(f"Total: ${total:.2f}")
     
     def get_summary(self):
         """Get summary by category"""
         if not self.expenses:
-            print("📭 No expenses to summarize.")
+            print("📊 No expenses to summarize.")
             return
         
-        summary = {}
+        category_totals = defaultdict(float)
         for expense in self.expenses:
-            category = expense['category']
-            amount = expense['amount']
-            summary[category] = summary.get(category, 0) + amount
+            category_totals[expense['category']] += expense['amount']
         
-        print("\n📊 EXPENSE SUMMARY BY CATEGORY:")
+        print("\n📊 Expense Summary by Category:")
         print("-" * 30)
-        for category, total in sorted(summary.items(), key=lambda x: x[1], reverse=True):
+        for category, total in category_totals.items():
             print(f"{category:<15}: ${total:.2f}")
         
-        return summary
+        total_all = sum(category_totals.values())
+        print("-" * 30)
+        print(f"Total Expenses: ${total_all:.2f}")
+        
+        return category_totals
     
     def visualize_expenses(self):
-        """Create visualizations of expenses"""
+        """Create pie chart visualization"""
         if not self.expenses:
-            print("📭 No expenses to visualize.")
+            print("📈 No expenses to visualize.")
             return
         
-        # Convert to DataFrame for easier manipulation
-        df = pd.DataFrame(self.expenses)
-        df['date'] = pd.to_datetime(df['date'])
-        df['month'] = df['date'].dt.to_period('M')
+        category_totals = self.get_summary()
         
-        # Create subplots
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+        # Create pie chart
+        categories = list(category_totals.keys())
+        amounts = list(category_totals.values())
         
-        # Pie chart by category
-        category_totals = df.groupby('category')['amount'].sum()
-        ax1.pie(category_totals.values, labels=category_totals.index, autopct='%1.1f%%', startangle=90)
-        ax1.set_title('Expenses by Category')
-        
-        # Bar chart by month
-        monthly_totals = df.groupby('month')['amount'].sum()
-        monthly_totals.plot(kind='bar', ax=ax2, color='skyblue')
-        ax2.set_title('Monthly Expenses')
-        ax2.set_xlabel('Month')
-        ax2.set_ylabel('Amount ($)')
-        plt.xticks(rotation=45)
-        
+        plt.figure(figsize=(10, 6))
+        plt.pie(amounts, labels=categories, autopct='%1.1f%%', startangle=90)
+        plt.title('Expense Distribution by Category')
+        plt.axis('equal')
         plt.tight_layout()
-        plt.savefig('expense_charts.png', dpi=300, bbox_inches='tight')
-        print("📈 Charts saved as 'expense_charts.png'")
         plt.show()
     
-    def delete_expense(self, expense_id: int):
+    def delete_expense(self, expense_id):
         """Delete an expense by ID"""
         for i, expense in enumerate(self.expenses):
             if expense['id'] == expense_id:
                 deleted = self.expenses.pop(i)
-                # Reassign IDs
+                # Update IDs for remaining expenses
                 for j, exp in enumerate(self.expenses[i:], start=i):
                     exp['id'] = j + 1
                 self.save_expenses()
-                print(f"🗑️ Expense {expense_id} deleted: ${deleted['amount']:.2f} for {deleted['category']}")
+                print(f"🗑️ Deleted expense: ${deleted['amount']} - {deleted['category']}")
                 return
-        print(f"❌ Expense ID {expense_id} not found.")
+        
+        print(f"❌ Expense with ID {expense_id} not found.")
+
+def main():
+    tracker = ExpenseTracker()
+    
+    while True:
+        print("\n💰 Personal Expense Tracker")
+        print("1. Add Expense")
+        print("2. View All Expenses")
+        print("3. View Expenses by Category")
+        print("4. Expense Summary")
+        print("5. Visualize Expenses")
+        print("6. Delete Expense")
+        print("7. Exit")
+        
+        choice = input("\nEnter your choice (1-7): ").strip()
+        
+        if choice == '1':
+            try:
+                amount = float(input("Enter amount: $"))
+                category = input("Enter category: ").strip()
+                description = input("Enter description (optional): ").strip()
+                tracker.add_expense(amount, category, description)
+            except ValueError:
+                print("❌ Invalid amount. Please enter a number.")
+        
+        elif choice == '2':
+            tracker.view_expenses()
+        
+        elif choice == '3':
+            category = input("Enter category to filter: ").strip()
+            tracker.view_expenses(category)
+        
+        elif choice == '4':
+            tracker.get_summary()
+        
+        elif choice == '5':
+            tracker.visualize_expenses()
+        
+        elif choice == '6':
+            try:
+                expense_id = int(input("Enter expense ID to delete: "))
+                tracker.delete_expense(expense_id)
+            except ValueError:
+                print("❌ Invalid ID. Please enter a number.")
+        
+        elif choice == '7':
+            print("👋 Goodbye!")
+            break
+        
+        else:
+            print("❌ Invalid choice. Please enter 1-7.")
+
+if __name__ == "__main__":
+    main()
