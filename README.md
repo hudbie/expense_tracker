@@ -1,85 +1,76 @@
-## Simple Expense Tracker - Usage Guide
+## Simple Expense Tracker
 
-### 📋 Overview
-A simple command-line expense tracking application with data visualization capabilities.
+A command-line expense tracking application with data visualization built in Python.
 
-### 🚀 Installation
+### Features
+- ✅ Add expenses with category and description
+- 📝 View all expenses or filter by category
+- 📊 View expense summary by category
+- 📈 Visualize expenses with pie charts
+- 🗑️ Delete expenses by ID
+- 💾 Persistent data storage (JSON)
 
-1. **Install required dependencies:**
+### Installation
+
+1. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
+   Or run the installation script:
+   ```bash
+   python install.py
+   ```
 
-### 🎯 How to Use
+2. **(Optional) Create sample data:**
+   ```bash
+   python quick_start.py
+   ```
 
-#### Running the Main Application
+### Usage
+
+**Start the application:**
 ```bash
-python main.py
+python expense_tracker.py
 ```
 
-#### Quick Statistics
-```bash
-python quick_stats.py
-```
+**Menu Options:**
+1. **Add Expense** - Record a new expense with amount, category, and description
+2. **View All Expenses** - Display all recorded expenses
+3. **View Expenses by Category** - Filter and view expenses by specific category
+4. **Expense Summary** - Show total expenses grouped by category
+5. **Visualize Expenses** - Display a pie chart of expense distribution
+6. **Delete Expense** - Remove an expense by its ID
+7. **Exit** - Quit the application
 
-### 📝 Features
+### Example Usage
 
-1. **Add Expense** 
-   - Record amount, category, and optional description
-   - Automatically saves with timestamp
+1. **Adding an expense:**
+   ```
+   Enter amount: $25.50
+   Enter category: Food
+   Enter description: Lunch
+   ```
 
-2. **View Expenses**
-   - See all expenses in a formatted table
-   - Option to view only recent expenses
+2. **Viewing summary:**
+   The application will display totals by category and overall spending.
 
-3. **Expense Summary**
-   - View total spending by category
-   - Sorted by highest spending
+3. **Visualization:**
+   A pie chart will open showing the distribution of your expenses across categories.
 
-4. **Data Visualization**
-   - Pie chart showing expense distribution by category
-   - Bar chart showing monthly spending trends
-   - Charts saved as `expense_charts.png`
+### Data Storage
 
-5. **Delete Expenses**
-   - Remove expenses by ID
-   - Automatic ID reassignment
+Expenses are stored in `expenses.json` file in the same directory. The data persists between sessions.
 
-### 💾 Data Storage
-- Expenses are stored in `expenses.json`
-- Data persists between sessions
-- Automatic backup on each modification
+### Requirements
 
-### 🎨 Sample Categories
-You can use any categories you like. Some suggestions:
-- Food & Dining
-- Transportation
-- Entertainment
-- Shopping
-- Bills & Utilities
-- Healthcare
-- Education
-
-### 📊 Sample Usage Flow
-
-1. Run `python main.py`
-2. Choose option 1 to add your first expense:
-   - Amount: `25.50`
-   - Category: `Food`
-   - Description: `Lunch with friends`
-3. Add a few more expenses with different categories
-4. Use option 3 to see category summary
-5. Use option 4 to generate visual charts
-6. Use option 5 to manage expenses if needed
-
-### 🔧 Requirements
 - Python 3.6+
-- matplotlib
-- pandas
+- matplotlib (for visualization)
 
-### 💡 Tips
-- Use descriptive categories for better visualization
-- Regular backups of `expenses.json` are recommended
-- Charts are automatically saved and can be shared
+### File Structure
+- `expense_tracker.py` - Main application
+- `requirements.txt` - Dependencies
+- `install.py` - Installation helper
+- `quick_start.py` - Sample data generator
+- `expenses.json` - Data file (created automatically)
 
-The application provides a simple yet powerful way to track and visualize your spending habits directly from the command line!
+Enjoy tracking your expenses! 💰
