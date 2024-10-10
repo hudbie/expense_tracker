@@ -41,7 +41,7 @@ class ExpenseTracker:
         }
         self.expenses.append(expense)
         self.save_expenses()
-        print(f"✅ Expense added: ${amount} - {category}")
+        print(f"✅ Expense added: ${amount} for {category}")
     
     def view_expenses(self, filter_category=None):
         """View all expenses or filter by category"""
@@ -64,13 +64,12 @@ class ExpenseTracker:
             print(f"{expense['id']:<4} {expense['date']:<20} {expense['category']:<15} ${expense['amount']:<9.2f} {expense['description']}")
             total += expense['amount']
         
-        print("-" * 70)
-        print(f"Total: ${total:.2f}")
+        print(f"\n💰 Total: ${total:.2f}")
     
     def get_summary(self):
         """Get summary by category"""
         if not self.expenses:
-            print("📊 No expenses to summarize.")
+            print("📝 No expenses to summarize.")
             return
         
         category_totals = defaultdict(float)
@@ -79,19 +78,16 @@ class ExpenseTracker:
         
         print("\n📊 Expense Summary by Category:")
         print("-" * 30)
-        for category, total in category_totals.items():
+        for category, total in sorted(category_totals.items(), key=lambda x: x[1], reverse=True):
             print(f"{category:<15}: ${total:.2f}")
         
-        total_all = sum(category_totals.values())
-        print("-" * 30)
-        print(f"Total Expenses: ${total_all:.2f}")
-        
+        print(f"\n💰 Grand Total: ${sum(category_totals.values()):.2f}")
         return category_totals
     
-    def visualize_expenses(self):
-        """Create pie chart visualization"""
+    def generate_chart(self):
+        """Generate pie chart of expenses by category"""
         if not self.expenses:
-            print("📈 No expenses to visualize.")
+            print("📝 No expenses to visualize.")
             return
         
         category_totals = self.get_summary()
@@ -100,41 +96,29 @@ class ExpenseTracker:
         categories = list(category_totals.keys())
         amounts = list(category_totals.values())
         
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(10, 8))
         plt.pie(amounts, labels=categories, autopct='%1.1f%%', startangle=90)
         plt.title('Expense Distribution by Category')
         plt.axis('equal')
-        plt.tight_layout()
-        plt.show()
-    
-    def delete_expense(self, expense_id):
-        """Delete an expense by ID"""
-        for i, expense in enumerate(self.expenses):
-            if expense['id'] == expense_id:
-                deleted = self.expenses.pop(i)
-                # Update IDs for remaining expenses
-                for j, exp in enumerate(self.expenses[i:], start=i):
-                    exp['id'] = j + 1
-                self.save_expenses()
-                print(f"🗑️ Deleted expense: ${deleted['amount']} - {deleted['category']}")
-                return
         
-        print(f"❌ Expense with ID {expense_id} not found.")
+        # Save the chart
+        plt.savefig('expense_chart.png')
+        plt.show()
+        print("📈 Chart saved as 'expense_chart.png'")
 
 def main():
     tracker = ExpenseTracker()
     
     while True:
-        print("\n💰 Personal Expense Tracker")
+        print("\n💸 Expense Tracker")
         print("1. Add Expense")
         print("2. View All Expenses")
         print("3. View Expenses by Category")
-        print("4. Expense Summary")
-        print("5. Visualize Expenses")
-        print("6. Delete Expense")
-        print("7. Exit")
+        print("4. View Summary")
+        print("5. Generate Chart")
+        print("6. Exit")
         
-        choice = input("\nEnter your choice (1-7): ").strip()
+        choice = input("\nEnter your choice (1-6): ").strip()
         
         if choice == '1':
             try:
@@ -156,21 +140,14 @@ def main():
             tracker.get_summary()
         
         elif choice == '5':
-            tracker.visualize_expenses()
+            tracker.generate_chart()
         
         elif choice == '6':
-            try:
-                expense_id = int(input("Enter expense ID to delete: "))
-                tracker.delete_expense(expense_id)
-            except ValueError:
-                print("❌ Invalid ID. Please enter a number.")
-        
-        elif choice == '7':
             print("👋 Goodbye!")
             break
         
         else:
-            print("❌ Invalid choice. Please enter 1-7.")
+            print("❌ Invalid choice. Please try again.")
 
 if __name__ == "__main__":
     main()
